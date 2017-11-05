@@ -55,7 +55,7 @@ ROOT_URLCONF = 'blockchain_anaviz.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': ['static/bower_components'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
