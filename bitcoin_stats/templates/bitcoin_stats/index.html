@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Bitcoin Stats {% endblock %}</title>
+</head>
+<body>
+    <marquee> <h1> BITCOIN STATS</h1></marquee>
+    {% block content %}
+    Welcome, welcome to Bitcoin Stats.
+    {% endblock %}
+    <br>
+    Table of contents:
+    <ul>
+        <li> <a href="{% url 'tracePrice'%}"> Trace bitcoin price</a></li>
+        <li> <a href="{% url 'comparePrice'%}"> Compare bitcoin price on different platform</a></li>
+        <li> <a href="{% url 'exchangeActivity' %}">Track user's activity on an exchange platform</a></li>
+        <li> <a href="{% url 'potentialAttacks' %}">Potential attacks on the NTU's full Bitcoin node></a></li>
+        <li> <a href="{% url 'inspectAddress' %}">Inspect a bitcoin address</a></li>
+    </ul>
+
+</body>
+</html>
