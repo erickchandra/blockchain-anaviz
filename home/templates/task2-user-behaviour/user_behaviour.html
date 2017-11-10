@@ -1,0 +1,57 @@
+{% extends "home/base_home.html" %}
+
+{% load staticfiles %}
+
+{% block link_personal %}
+    <link rel="stylesheet" href="{% static 'cal-heatmap/cal-heatmap.css' %}" />
+{% endblock %}
+
+{% block main_dashboard_content %}
+<section class="content-header">
+    <h1>
+        User Behaviour
+        <small>Version 1.0</small>
+    </h1>
+</section>
+
+<section class="content">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box">
+                <div class="box-header with-border">
+                    <h3>Past Trading</h3>
+                </div>
+                <div class="box-body">
+                    <div class="pull-right">
+                        <button id="previous" class="btn btn-default"><i class="fa fa-arrow-left" aria-hidden="true"></i></i></button>
+                        <button id="next" class="btn btn-default"><i class="fa fa-arrow-right" aria-hidden="true"></i></i></button>
+                    </div>
+                    <br><br><br>
+                    <div class="col-md-6" id="past-trading"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block script_personal %}
+<script type="text/javascript" src="{% static 'd3/d3.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'cal-heatmap/cal-heatmap.min.js' %}"></script>
+<script type="text/javascript">
+    $('li#menu_dashboard_list_user_behaviour').addClass('active');
+    var user_behaviours = "{{ user_behaviours | escapejs}}";
+    var cal = new CalHeatMap();
+    
+	cal.init({
+        data: JSON.parse(user_behaviours),
+        itemSelector: "#past-trading",
+        domain: "month",
+	    subDomain: "day",
+        range: 11,
+        cellSize: 14.5,
+        previousSelector: "#previous",
+	    nextSelector: "#next",
+    });
+</script>
+{% endblock %}

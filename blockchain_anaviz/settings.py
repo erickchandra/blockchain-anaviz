@@ -145,4 +145,5 @@ STATICFILES_FINDERS = (
 BOWER_INSTALLED_APPS = (
     'jquery',
     'admin-lte',
+    'cal-heatmap',
 )

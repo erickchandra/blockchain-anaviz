@@ -1,6 +1,9 @@
+import os, json, datetime
+
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.template import loader
+from django.conf import settings
 
 # Views here
 def index(request):
@@ -8,3 +11,15 @@ def index(request):
 
 def priceRealtime(request):
     return render(request, 'task1-price/base_1_price.html')
+
+def userBehaviour(request):
+    url = os.path.join(settings.STATIC_ROOT, 'user_behaviour/dummy.json')
+
+    user_behaviours = {}
+    with open(url) as json_data:
+        data = json.load(json_data)
+        for item in data:
+            timestamp = int(float(item["timestamp"]))
+            user_behaviours[timestamp] = float(item["price"])
+    print user_behaviours
+    return render(request, 'task2-user-behaviour/user_behaviour.html', context={'user_behaviours': json.dumps(user_behaviours)})
