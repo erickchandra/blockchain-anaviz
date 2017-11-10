@@ -1,2 +1,4 @@
-/bower_components
 *.pyc
+db.sqlite3
+blockchain_anaviz/__pycache__
+static/bower_components
