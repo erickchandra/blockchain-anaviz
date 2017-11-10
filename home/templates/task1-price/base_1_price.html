@@ -1,0 +1,16 @@
+{% extends "home/base_home.html" %}
+
+{% block main_dashboard_content %}
+<section class="content-header">
+    <h1>
+        Bitcoin BTC to USD Realtime Price
+        <small>Version 1.0</small>
+    </h1>
+</section>
+{% endblock %}
+
+{% block script_personal %}
+<script>
+  $('li#menu_dashboard_list_price_realtime').addClass('active');
+</script>
+{% endblock %}
