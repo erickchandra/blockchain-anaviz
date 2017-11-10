@@ -1,0 +1,98 @@
+{% extends "home/base_index.html" %}
+
+{% block sidenav_menu_dashboard_list %}
+    {% include "home/list_menu_dashboard.html" %}
+{% endblock %}
+
+{% block title %}
+Blockchain Dashboard | Bitcoin Analysis and Visualization
+{% endblock %}
+
+{% block logo_name %}
+<b>Ricks</b>Block
+{% endblock %}
+
+{% block main_dashboard_content %}
+<section class="content-header">
+    <h1>
+        Bitcoin Analysis and Visualization | Home Menu
+        <small>Version 1.0</small>
+    </h1>
+</section>
+
+<section class="content">
+  <!-- Info boxes -->
+  <div class="row">
+    <div class="col-md-3 col-sm-6 col-xs-12">
+      <div class="info-box">
+        <span class="info-box-icon bg-aqua"><i class="ion ion-ios-gear-outline"></i></span>
+
+        <div class="info-box-content">
+          <span class="info-box-text">Title 1</span>
+          <span class="info-box-number">90<small>%</small></span>
+        </div>
+        <!-- /.info-box-content -->
+      </div>
+      <!-- /.info-box -->
+    </div>
+    <!-- /.col -->
+    <div class="col-md-3 col-sm-6 col-xs-12">
+      <div class="info-box">
+        <span class="info-box-icon bg-red"><i class="fa fa-google-plus"></i></span>
+
+        <div class="info-box-content">
+          <span class="info-box-text">Title 2</span>
+          <span class="info-box-number">41,410</span>
+        </div>
+        <!-- /.info-box-content -->
+      </div>
+      <!-- /.info-box -->
+    </div>
+    <!-- /.col -->
+
+    <!-- fix for small devices only -->
+    <div class="clearfix visible-sm-block"></div>
+
+    <div class="col-md-3 col-sm-6 col-xs-12">
+      <div class="info-box">
+        <span class="info-box-icon bg-green"><i class="ion ion-ios-cart-outline"></i></span>
+
+        <div class="info-box-content">
+          <span class="info-box-text">Title 3</span>
+          <span class="info-box-number">760</span>
+        </div>
+        <!-- /.info-box-content -->
+      </div>
+      <!-- /.info-box -->
+    </div>
+    <!-- /.col -->
+    <div class="col-md-3 col-sm-6 col-xs-12">
+      <div class="info-box">
+        <span class="info-box-icon bg-yellow"><i class="ion ion-ios-people-outline"></i></span>
+
+        <div class="info-box-content">
+          <span class="info-box-text">Title 4</span>
+          <span class="info-box-number">2,000</span>
+        </div>
+        <!-- /.info-box-content -->
+      </div>
+      <!-- /.info-box -->
+    </div>
+    <!-- /.col -->
+  </div>
+  <!-- /.row -->
+</section>
+{% endblock %}
+
+{% block footer_content %}
+<div class="pull-right hidden-xs">
+  <b>Version</b> {{ VERSION_CODE }} {{ VERSION_NAME }}
+</div>
+<strong>Copyright &copy; 2017 <a href="">Ricks Group</a>.</strong> All rights reserved.
+{% endblock %}
+
+{% block script_personal %}
+<script>
+  $('li#menu_dashboard_list_home').addClass('active');
+</script>
+{% endblock %}
