@@ -22,9 +22,9 @@
                     <h3>Past Trading</h3>
                 </div>
                 <div class="box-body">
-                    <div class="pull-right">
-                        <button id="previous" class="btn btn-default"><i class="fa fa-arrow-left" aria-hidden="true"></i></i></button>
-                        <button id="next" class="btn btn-default"><i class="fa fa-arrow-right" aria-hidden="true"></i></i></button>
+                    <div class="form-group">
+                        <select name="select-year" id="select-year" style="width: 100px" class="form-control pull-right"></select>
+                        <label for="select-year" class="control-label col-sm-1 pull-right" style="font-size: 18px;font-weight: normal !important;">Year</label>
                     </div>
                     <br><br><br>
                     <div class="col-md-6" id="past-trading"></div>
@@ -40,18 +40,34 @@
 <script type="text/javascript" src="{% static 'cal-heatmap/cal-heatmap.min.js' %}"></script>
 <script type="text/javascript">
     $('li#menu_dashboard_list_user_behaviour').addClass('active');
+
+    var year = new Date().getFullYear();
     var user_behaviours = "{{ user_behaviours | escapejs}}";
+
     var cal = new CalHeatMap();
-    
-	cal.init({
+    cal.init({
+        start: new Date(year, 0),
         data: JSON.parse(user_behaviours),
         itemSelector: "#past-trading",
         domain: "month",
 	    subDomain: "day",
-        range: 11,
-        cellSize: 14.5,
-        previousSelector: "#previous",
-	    nextSelector: "#next",
+        range: 12,
+        cellSize: 13,
+        subDomainTitleFormat: {
+            filled: "{count} interaction(s) on {date}"
+        },
+        legend: [5, 10, 25, 50, 100]
+    });
+
+    for(var i = year - 2; i < year + 3; i++) {
+        $('#select-year').append('<option value='+i+'>'+i+'</option>');
+    }
+    $('#select-year').val(year);
+
+    $('#select-year').on('change', function (e) {
+        var yearSelected = this.value;
+        console.log(yearSelected);
+        cal.jumpTo(new Date(yearSelected, 0), true);
     });
 </script>
 {% endblock %}

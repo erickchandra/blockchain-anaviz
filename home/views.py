@@ -20,6 +20,8 @@ def userBehaviour(request):
         data = json.load(json_data)
         for item in data:
             timestamp = int(float(item["timestamp"]))
-            user_behaviours[timestamp] = float(item["price"])
-    print user_behaviours
+            if timestamp in user_behaviours:
+                user_behaviours[timestamp] += 1
+            else:
+                user_behaviours[timestamp] = 1
     return render(request, 'task2-user-behaviour/user_behaviour.html', context={'user_behaviours': json.dumps(user_behaviours)})
