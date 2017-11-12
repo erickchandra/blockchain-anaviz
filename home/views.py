@@ -1,10 +1,7 @@
-import os, json, datetime
-
+import json
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.template import loader
-from django.conf import settings
-from django.contrib.staticfiles.finders import find
 
 # Views here
 def index(request):
