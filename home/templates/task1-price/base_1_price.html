@@ -1,16 +1,235 @@
 {% extends "home/base_home.html" %}
 
+{% load staticfiles %}
+
 {% block main_dashboard_content %}
 <section class="content-header">
-    <h1>
-        Bitcoin BTC to USD Realtime Price
-        <small>Version 1.0</small>
-    </h1>
+	<h1>
+		Bitcoin BTC to USD Realtime Price
+		<small>Version 1.0</small>
+	</h1>
+</section>
+
+<section class="content">
+	<div class="row">
+    <div class="col-md-12">
+      <!-- interactive chart -->
+      <div class="box box-primary">
+        <div class="box-header with-border">
+          <i class="fa fa-bar-chart-o"></i>
+    
+          <h3 class="box-title">BTC to USD</h3>
+    
+          <div class="box-tools pull-right">
+            Real time
+            <div class="btn-group" id="realtime" data-toggle="btn-toggle">
+            <button type="button" class="btn btn-default btn-xs active" data-toggle="on">On</button>
+            <button type="button" class="btn btn-default btn-xs" data-toggle="off">Off</button>
+            </div>
+          </div>
+        </div>
+        <div class="box-body">
+          <div id="interactive" style="height: 300px;"></div>
+        </div>
+        <!-- /.box-body-->
+      </div>
+      <!-- /.box -->
+    </div>
+      
+		<div class="col-md-12">
+			<!-- LINE CHART -->
+			<div class="box box-info">
+				<div class="box-header with-border">
+				<h3 class="box-title">Historical BTC to USD in the latest semester</h3>
+	
+				<div class="box-tools pull-right">
+					<button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+					</button>
+					<button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+				</div>
+				</div>
+				<div class="box-body">
+				<div class="chart">
+					<canvas id="lineChart"></canvas>
+				</div>
+				</div>
+				<!-- /.box-body -->
+			</div>
+			<!-- /.box -->
+		</div>
+	</div>
 </section>
 {% endblock %}
 
 {% block script_personal %}
+<!-- FLOT CHARTS -->
+<script src="{% static 'Flot/jquery.flot.js' %}"></script>
+<!-- FLOT RESIZE PLUGIN - allows the chart to redraw when the window is resized -->
+<script src="{% static 'Flot/jquery.flot.resize.js' %}"></script>
+<!-- FLOT PIE PLUGIN - also used to draw donut charts -->
+<script src="{% static 'Flot/jquery.flot.pie.js' %}"></script>
+<!-- FLOT CATEGORIES PLUGIN - Used to draw bar charts -->
+<script src="{% static 'Flot/jquery.flot.categories.js' %}"></script>
+
 <script>
-  $('li#menu_dashboard_list_price_realtime').addClass('active');
+	$('li#menu_dashboard_list_price_realtime').addClass('active');
+
+	$(function () {
+		/* =============================
+		 * Historical Price - Line Chart
+		 * =============================
+		*/
+
+		function getHistoricalDataOneYear() {
+			var xhttp = new XMLHttpRequest();
+			/*
+			xhttp.onreadystatechange = function() {
+				if (xhttp.readyState == XMLHttpRequest.DONE) {
+					
+				}
+			}
+			*/
+			xhttp.open("GET", "/price-historical", false);
+			xhttp.send();
+			var response = JSON.parse(xhttp.responseText);
+			var resLabels = []
+			var resData = []
+			for (var i = 0; i < response["values"].length; i++) {
+				// Add timestamp label
+				resLabels.push(new Date(response["values"][i]["x"]));
+				// Add data to dataset
+				resData.push(response["values"][i]["y"]);
+			}
+
+			var lineChartData = {
+				labels: resLabels,
+				datasets: [
+					{
+						label               : 'Bitcoin [BTC]',
+						backgroundColor			: 'rgba(60,141,188,0.9)',
+						borderColor         : 'rgba(60,141,188,0.8)',
+						pointBackgroundColor: '#3b8bba',
+						pointBorderColor    : 'rgba(60,141,188,1)',
+						pointHoverBackgroundColor: '#fff',
+						pointHoverBorderColor: 'rgba(60,141,188,1)',
+						data                : resData,
+						lineTension					: 0.3,
+						fill								: false,
+						borderWidth					: 1.5,
+						pointRadius					: 0,
+						pointBorderWidth		: 1.5,
+					},
+				]
+			}
+
+			return lineChartData;
+		}
+
+		var lineChartData = getHistoricalDataOneYear();
+
+		var lineChartCanvas          = $('#lineChart').get(0).getContext('2d')
+		var lineChart                = new Chart(lineChartCanvas, {type:'line', data: lineChartData, options: {}});
+
+		/* ===================
+		 * Realtime BTC to USD
+		 * ===================
+		 */
+		var data = [], totalPoints = 100
+	
+		var interactive_plot = $.plot('#interactive', [getPriceData()], {
+		  grid  : {
+        borderColor: '#f3f3f3',
+        borderWidth: 1,
+        tickColor  : '#f3f3f3'
+		  },
+		  series: {
+        shadowSize: 0, // Drawing is faster without shadows
+        color     : '#3c8dbc'
+		  },
+		  lines : {
+        fill : true, //Converts the line chart to area chart
+        color: '#3c8dbc'
+		  },
+		  yaxis : {
+        min : 0,
+        max : 15000,
+        show: true
+		  },
+		  xaxis : {
+			  show: true
+		  }
+		})
+
+		function getPriceData() {
+			var xhttp = new XMLHttpRequest();
+			/*
+			xhttp.onreadystatechange = function() {
+				if (xhttp.readyState == XMLHttpRequest.DONE) {
+					
+				}
+			}
+			*/
+			xhttp.open("GET", "https://blockchain.info/ticker", false);
+			xhttp.send();
+			var response = JSON.parse(xhttp.responseText);
+
+			if (data.length > totalPoints) {
+				data = data.slice(1)
+			}
+
+      while (data.length < totalPoints) {
+				var prev = data.length > 0 ? data[data.length - 1] : 0,
+						y    = 0
+
+				if (y < 0) {
+					y = 0
+				} else if (y > 100) {
+					y = 100
+				}
+
+				data.push(y)
+			}
+
+			data.push(response["USD"]["buy"])
+
+			// Zip the generated y values with the x values
+			var res = []
+			for (var i = 0; i < data.length; ++i) {
+				res.push([i, data[i]])
+			}
+
+			return res
+		}
+	
+		var updateInterval = 500 //Fetch data ever x milliseconds
+		var realtime       = 'on' //If == to on then fetch data every x seconds. else stop fetching
+		function update() {
+			interactive_plot.setData([getPriceData()])
+		  // interactive_plot.setData([getRandomData()])
+	
+		  // Since the axes don't change, we don't need to call plot.setupGrid()
+		  interactive_plot.draw()
+		  if (realtime === 'on')
+			setTimeout(update, updateInterval)
+		}
+	
+		//INITIALIZE REALTIME DATA FETCHING
+		if (realtime === 'on') {
+		  update()
+		}
+		//REALTIME TOGGLE
+		$('#realtime .btn').click(function () {
+		  if ($(this).data('toggle') === 'on') {
+				realtime = 'on'
+		  }
+		  else {
+				realtime = 'off'
+		  }
+		  update()
+		});
+		/*
+		 * END INTERACTIVE CHART
+		 */
+	});
 </script>
 {% endblock %}

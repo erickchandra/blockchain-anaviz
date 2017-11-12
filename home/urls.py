@@ -6,4 +6,5 @@ app_name = 'home'
 urlpatterns = [
     url(r'^$', views.index, name='index'),
     url(r'^price-realtime', views.priceRealtime, name="priceRealtime"),
+    url(r'^price-historical', views.priceHistorical, name="priceHistorical")
 ]
