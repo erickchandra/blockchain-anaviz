@@ -18,7 +18,7 @@
         <div class="box-header with-border">
           <i class="fa fa-bar-chart-o"></i>
     
-          <h3 class="box-title">BTC to USD</h3>
+          <h3 class="box-title">BTC to USD in Bitfinex</h3>
     
           <div class="box-tools pull-right">
             Real time
@@ -40,7 +40,7 @@
 			<!-- LINE CHART -->
 			<div class="box box-info">
 				<div class="box-header with-border">
-				<h3 class="box-title">Historical BTC to USD in the latest semester</h3>
+				<h3 class="box-title">Latest historical BTC (XBT) to USD in Kraken</h3>
 	
 				<div class="box-tools pull-right">
 					<button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
@@ -72,7 +72,7 @@
 <script src="{% static 'Flot/jquery.flot.categories.js' %}"></script>
 
 <script>
-	$('li#menu_dashboard_list_price_realtime').addClass('active');
+	$('li#menu_dashboard_list_price_exchange').addClass('active');
 
 	$(function () {
 		/* =============================
@@ -89,16 +89,26 @@
 				}
 			}
 			*/
-			xhttp.open("GET", "/price-historical", false);
+			xhttp.open("GET", "/depth-kraken", false);
 			xhttp.send();
 			var response = JSON.parse(xhttp.responseText);
 			var resLabels = []
-			var resData = []
-			for (var i = 0; i < response["values"].length; i++) {
+      var resData = []
+      
+      var asksArray = response["result"]["XXBTZUSD"]["asks"];
+
+      function Comparator(a, b) {
+        if (a[2] < b[2]) return -1;
+        if (a[2] > b[2]) return 1;
+        return 0;
+      }
+      
+      asksArray = asksArray.sort(Comparator);
+			for (var i = 0; i < asksArray.length; i++) {
 				// Add timestamp label
-				resLabels.push(new Date(response["values"][i]["x"]));
+				resLabels.push(new Date(asksArray[i][2]));
 				// Add data to dataset
-				resData.push(response["values"][i]["y"]);
+				resData.push(asksArray[i][0]);
 			}
 
 			var lineChartData = {
@@ -169,7 +179,7 @@
 				}
 			}
 			*/
-			xhttp.open("GET", "/ticker-blockchain", false);
+			xhttp.open("GET", "/ticker-bitfinex", false);
 			xhttp.send();
 			var response = JSON.parse(xhttp.responseText);
 
@@ -190,7 +200,7 @@
 				data.push(y)
 			}
 
-			data.push(response["USD"]["buy"])
+			data.push(response["last_price"])
 
 			// Zip the generated y values with the x values
 			var res = []
