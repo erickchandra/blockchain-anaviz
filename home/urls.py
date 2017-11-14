@@ -12,4 +12,5 @@ urlpatterns = [
     url(r'^ticker-bitfinex', views.tickerBitfinex, name="tickerBitfinex"),
     url(r'^ticker-kraken', views.tickerKraken, name="tickerKraken"),
     url(r'^depth-kraken', views.depthKraken, name="depthKraken"),
+    url(r'^user-behaviour', views.userBehaviour, name="userBehaviour"),
 ]

@@ -15,6 +15,7 @@
     "tests"
   ],
   "dependencies": {
-    "admin-lte": "^2.4.2"
+    "admin-lte": "^2.4.2",
+    "cal-heatmap": "^3.6.2"
   }
 }

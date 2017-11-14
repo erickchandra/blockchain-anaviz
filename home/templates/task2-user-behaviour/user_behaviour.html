@@ -1,0 +1,73 @@
+{% extends "home/base_home.html" %}
+
+{% load staticfiles %}
+
+{% block link_personal %}
+    <link rel="stylesheet" href="{% static 'cal-heatmap/cal-heatmap.css' %}" />
+{% endblock %}
+
+{% block main_dashboard_content %}
+<section class="content-header">
+    <h1>
+        User Behaviour
+        <small>Version 1.0</small>
+    </h1>
+</section>
+
+<section class="content">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box">
+                <div class="box-header with-border">
+                    <h3>Past Trading</h3>
+                </div>
+                <div class="box-body">
+                    <div class="form-group">
+                        <select name="select-year" id="select-year" style="width: 100px" class="form-control pull-right"></select>
+                        <label for="select-year" class="control-label col-sm-1 pull-right" style="font-size: 18px;font-weight: normal !important;">Year</label>
+                    </div>
+                    <br><br><br>
+                    <div class="col-md-6" id="past-trading"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block script_personal %}
+<script type="text/javascript" src="{% static 'd3/d3.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'cal-heatmap/cal-heatmap.min.js' %}"></script>
+<script type="text/javascript">
+    $('li#menu_dashboard_list_user_behaviour').addClass('active');
+
+    var year = new Date().getFullYear();
+    var user_behaviours = "{{ user_behaviours | escapejs}}";
+
+    var cal = new CalHeatMap();
+    cal.init({
+        start: new Date(year, 0),
+        data: JSON.parse(user_behaviours),
+        itemSelector: "#past-trading",
+        domain: "month",
+	    subDomain: "day",
+        range: 12,
+        cellSize: 13,
+        subDomainTitleFormat: {
+            filled: "{count} interaction(s) on {date}"
+        },
+        legend: [5, 10, 25, 50, 100]
+    });
+
+    for(var i = year - 2; i < year + 3; i++) {
+        $('#select-year').append('<option value='+i+'>'+i+'</option>');
+    }
+    $('#select-year').val(year);
+
+    $('#select-year').on('change', function (e) {
+        var yearSelected = this.value;
+        console.log(yearSelected);
+        cal.jumpTo(new Date(yearSelected, 0), true);
+    });
+</script>
+{% endblock %}
