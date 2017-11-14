@@ -145,4 +145,6 @@ STATICFILES_FINDERS = (
 BOWER_INSTALLED_APPS = (
     'jquery',
     'admin-lte',
+    'chart.js',
+    'flot',
 )
