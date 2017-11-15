@@ -74,6 +74,8 @@
 <script>
 	$('li#menu_dashboard_list_price_exchange').addClass('active');
 
+	var MyData = {};
+
 	$(function () {
 		/* =============================
 		 * Historical Price - Line Chart
@@ -89,64 +91,68 @@
 				}
 			}
 			*/
-			xhttp.open("GET", "/depth-kraken", false);
+			xhttp.open("GET", "/depth-kraken", true);
+			xhttp.onload = function(e) {
+        if (xhttp.readyState === 4) {
+          if (xhttp.status === 200) {
+						var response = JSON.parse(xhttp.responseText);
+						var resLabels = []
+						var resData = []
+						
+						var asksArray = response["result"]["XXBTZUSD"]["asks"];
+			
+						function Comparator(a, b) {
+							if (a[2] < b[2]) return -1;
+							if (a[2] > b[2]) return 1;
+							return 0;
+						}
+						
+						asksArray = asksArray.sort(Comparator);
+						for (var i = 0; i < asksArray.length; i++) {
+							// Add timestamp label
+							resLabels.push(new Date(asksArray[i][2] * 1000));
+							// Add data to dataset
+							resData.push(asksArray[i][0]);
+						}
+			
+						var lineChartData = {
+							labels: resLabels,
+							datasets: [
+								{
+									label               : 'Bitcoin [BTC]',
+									backgroundColor			: 'rgba(60,141,188,0.9)',
+									borderColor         : 'rgba(60,141,188,0.8)',
+									pointBackgroundColor: '#3b8bba',
+									pointBorderColor    : 'rgba(60,141,188,1)',
+									pointHoverBackgroundColor: '#fff',
+									pointHoverBorderColor: 'rgba(60,141,188,1)',
+									data                : resData,
+									lineTension					: 0.3,
+									fill								: false,
+									borderWidth					: 1.5,
+									pointRadius					: 0,
+									pointBorderWidth		: 1.5,
+								},
+							]
+						}
+
+						var lineChartCanvas          = $('#lineChart').get(0).getContext('2d')
+						var lineChart                = new Chart(lineChartCanvas, {type:'line', data: lineChartData, options: {}});
+					}
+				}
+			}
 			xhttp.send();
-			var response = JSON.parse(xhttp.responseText);
-			var resLabels = []
-      var resData = []
-      
-      var asksArray = response["result"]["XXBTZUSD"]["asks"];
-
-      function Comparator(a, b) {
-        if (a[2] < b[2]) return -1;
-        if (a[2] > b[2]) return 1;
-        return 0;
-      }
-      
-      asksArray = asksArray.sort(Comparator);
-			for (var i = 0; i < asksArray.length; i++) {
-				// Add timestamp label
-				resLabels.push(new Date(asksArray[i][2] * 1000));
-				// Add data to dataset
-				resData.push(asksArray[i][0]);
-			}
-
-			var lineChartData = {
-				labels: resLabels,
-				datasets: [
-					{
-						label               : 'Bitcoin [BTC]',
-						backgroundColor			: 'rgba(60,141,188,0.9)',
-						borderColor         : 'rgba(60,141,188,0.8)',
-						pointBackgroundColor: '#3b8bba',
-						pointBorderColor    : 'rgba(60,141,188,1)',
-						pointHoverBackgroundColor: '#fff',
-						pointHoverBorderColor: 'rgba(60,141,188,1)',
-						data                : resData,
-						lineTension					: 0.3,
-						fill								: false,
-						borderWidth					: 1.5,
-						pointRadius					: 0,
-						pointBorderWidth		: 1.5,
-					},
-				]
-			}
-
-			return lineChartData;
 		}
 
-		var lineChartData = getHistoricalData();
-
-		var lineChartCanvas          = $('#lineChart').get(0).getContext('2d')
-		var lineChart                = new Chart(lineChartCanvas, {type:'line', data: lineChartData, options: {}});
+		getHistoricalData();
 
 		/* ===================
 		 * Realtime BTC to USD
 		 * ===================
 		 */
-		var data = [], totalPoints = 100
+		MyData.data = [], totalPoints = 100
 	
-		var interactive_plot = $.plot('#interactive', [getPriceData()], {
+		MyData.interactive_plot = $.plot('#interactive', [initData()], {
 		  grid  : {
         borderColor: '#f3f3f3',
         borderWidth: 1,
@@ -168,7 +174,29 @@
 		  xaxis : {
 			  show: true
 		  }
-		})
+		});
+
+		function initData() {
+      while (MyData.data.length < totalPoints) {
+        var prev = MyData.data.length > 0 ? MyData.data[MyData.data.length - 1] : 0,
+            y    = 0;
+
+        if (y < 0) {
+          y = 0;
+        } else if (y > 100) {
+          y = 0;
+        }
+
+        MyData.data.push(y);
+      }
+
+      var res = [];
+      for (var i = 0; i < MyData.data.length; ++i) {
+        res.push([i, MyData.data[i]]);
+      }
+
+      return res;
+    }
 
 		function getPriceData() {
 			var xhttp = new XMLHttpRequest();
@@ -179,46 +207,53 @@
 				}
 			}
 			*/
-			xhttp.open("GET", "/ticker-bitfinex", false);
-			xhttp.send();
-			var response = JSON.parse(xhttp.responseText);
+			xhttp.open("GET", "/ticker-bitfinex", true);
+			xhttp.onload = function(e) {
+        if (xhttp.readyState === 4) {
+          if (xhttp.status === 200) {
+						var response = JSON.parse(xhttp.responseText);
+						
+						if (MyData.data.length > totalPoints) {
+							MyData.data = MyData.data.slice(1)
+						}
+			
+						while (MyData.data.length < totalPoints) {
+							var prev = MyData.data.length > 0 ? MyData.data[MyData.data.length - 1] : 0,
+									y    = 0
+			
+							if (y < 0) {
+								y = 0
+							} else if (y > 100) {
+								y = 100
+							}
+			
+							MyData.data.push(y)
+						}
+			
+						MyData.data.push(response["last_price"])
+			
+						// Zip the generated y values with the x values
+						var res = []
+						for (var i = 0; i < MyData.data.length; ++i) {
+							res.push([i, MyData.data[i]])
+						}
 
-			if (data.length > totalPoints) {
-				data = data.slice(1)
-			}
+						MyData.interactive_plot.setData([res])
 
-      while (data.length < totalPoints) {
-				var prev = data.length > 0 ? data[data.length - 1] : 0,
-						y    = 0
-
-				if (y < 0) {
-					y = 0
-				} else if (y > 100) {
-					y = 100
+						// Since the axes don't change, we don't need to call plot.setupGrid()
+		  			MyData.interactive_plot.draw()
+					}
 				}
-
-				data.push(y)
 			}
-
-			data.push(response["last_price"])
-
-			// Zip the generated y values with the x values
-			var res = []
-			for (var i = 0; i < data.length; ++i) {
-				res.push([i, data[i]])
-			}
-
-			return res
+			xhttp.send();
 		}
 	
-		var updateInterval = 60000 //Fetch data ever x milliseconds
+		var updateInterval = 2000; //Fetch data ever x milliseconds
 		var realtime       = 'on' //If == to on then fetch data every x seconds. else stop fetching
 		function update() {
-			interactive_plot.setData([getPriceData()])
+			getPriceData();
 		  // interactive_plot.setData([getRandomData()])
-	
-		  // Since the axes don't change, we don't need to call plot.setupGrid()
-		  interactive_plot.draw()
+		  
 		  if (realtime === 'on')
 			setTimeout(update, updateInterval)
 		}
