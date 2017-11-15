@@ -147,4 +147,5 @@ BOWER_INSTALLED_APPS = (
     'admin-lte',
     'chart.js',
     'flot',
+    'cal-heatmap',
 )
