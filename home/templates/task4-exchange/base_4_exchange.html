@@ -106,7 +106,7 @@
       asksArray = asksArray.sort(Comparator);
 			for (var i = 0; i < asksArray.length; i++) {
 				// Add timestamp label
-				resLabels.push(new Date(asksArray[i][2]));
+				resLabels.push(new Date(asksArray[i][2] * 1000));
 				// Add data to dataset
 				resData.push(asksArray[i][0]);
 			}

@@ -96,7 +96,7 @@
 			var resData = []
 			for (var i = 0; i < response["values"].length; i++) {
 				// Add timestamp label
-				resLabels.push(new Date(response["values"][i]["x"]));
+				resLabels.push(new Date(response["values"][i]["x"] * 1000));
 				// Add data to dataset
 				resData.push(response["values"][i]["y"]);
 			}
