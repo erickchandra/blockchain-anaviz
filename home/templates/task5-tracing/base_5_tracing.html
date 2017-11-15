@@ -1,0 +1,50 @@
+{% extends "home/base_home.html" %}
+
+{% load staticfiles %}
+
+{% block main_dashboard_content %}
+<section class="content-header">
+    <h1>
+        User Behaviour
+        <small>Version 1.0</small>
+    </h1>
+</section>
+<section class="content">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box">
+                <div class="box-header with-border">
+                    <h3>Past Trading</h3>
+                </div>
+                <div class="box-body">
+                    <div id="container1"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block script_personal %}
+<script type="text/javascript" src="{% static 'd3/d3.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'topojson/topojson.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'datamaps/dist/datamaps.world.min.js' %}"></script>
+<script>
+    //basic map config with custom fills, mercator projection
+    var map = new Datamap({
+        scope: 'world',
+        element: document.getElementById('container1'),
+        projection: 'mercator',
+        height: 500,
+        fills: {
+            defaultFill: '#f0af0a',
+            lt50: 'rgba(0,244,244,0.9)',
+            gt50: 'red'
+        },
+    })
+   
+    var arcs = JSON.parse("{{ arcs | escapejs}}");
+
+    map.arc(arcs, {strokeWidth: 2});
+</script>
+{% endblock %}

@@ -54,3 +54,32 @@ def userBehaviour(request):
             else:
                 user_behaviours[timestamp] = 1
     return render(request, 'task2-user-behaviour/user_behaviour.html', context={'user_behaviours': json.dumps(user_behaviours)})
+
+def tracing(request):
+    # access = ServiceProxy("http://2b:hw234@140.112.29.42:8332")
+    # print (access.getinfo())
+    url = find("tracing/dummy.json")
+    with open(url) as json_data:
+        data = json.load(json_data)
+
+        arcs = []
+
+        for item in data:
+            arc = {}
+
+            arc["origin"] = {
+                "latitude": 25.0418,
+                "longitude": 121.4966
+            }
+
+            ip_address = item["addr"].split(":")[0]
+            result = urllib.request.urlopen("http://www.freegeoip.net/json/{0}".format(ip_address)).read()
+            location_info = json.loads(result.decode("utf-8"))
+
+            arc["destination"] = {
+                "latitude": location_info["latitude"],
+                "longitude": location_info["longitude"]
+            }
+
+            arcs.append(arc)
+    return render(request, 'task5-tracing/base_5_tracing.html', context={'arcs': json.dumps(arcs)})
