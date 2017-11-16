@@ -148,4 +148,5 @@ BOWER_INSTALLED_APPS = (
     'chart.js',
     'flot',
     'cal-heatmap',
+    'datamaps',
 )
