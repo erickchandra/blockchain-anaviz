@@ -1,0 +1,23 @@
+{% extends "home/base_home.html" %}
+
+{% load staticfiles %}
+
+{% block link_personal %}
+{% endblock %}
+
+{% block main_dashboard_content %}
+    Here are the addresses that send some money to the address {{ addressToTrace }}
+    in the last {{ numberOfBlocks }} blocks:
+    <ol>
+    {% for address in received_from %}
+        <li> {{address}} </li>
+    {%  endfor %}
+    </ol>
+    Here are the addresses that received some money fromthe address {{ addressToTrace }}
+    in the last {{ numberOfBlocks }} blocks:
+    {% for address in sent_to %}
+        <li> {{address}} </li>
+    {%  endfor %}
+    </ol>
+
+{% endblock %}

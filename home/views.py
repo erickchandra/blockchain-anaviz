@@ -5,8 +5,14 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.template import loader
 from django.contrib.staticfiles.finders import find
+from django import forms
+
+import home.node_connection
 
 # Views here
+from home import node_connection
+
+
 def index(request):
     return render(request, 'home/base_home.html')
 
@@ -54,3 +60,30 @@ def userBehaviour(request):
             else:
                 user_behaviours[timestamp] = 1
     return render(request, 'task2-user-behaviour/user_behaviour.html', context={'user_behaviours': json.dumps(user_behaviours)})
+
+
+class AddressTraceRequestForm(forms.Form):
+    addressToTrace = forms.CharField(label="Address to trace:", max_length=34, min_length=26)
+    numberOfBlocks = forms.IntegerField(label="Number of top blocks to search:", initial=3)
+
+def addresTracerRequest(request):
+    node_connection.start()
+    if request.method == 'GET':
+        print("jestem")
+        form = AddressTraceRequestForm(request.GET)
+        if form.is_valid():
+            data = form.cleaned_data
+            print(data['addressToTrace'], data['numberOfBlocks'])
+            received_from, send_to = node_connection.analize_chain(data['addressToTrace'], data['numberOfBlocks'])
+            send_to = list(send_to)
+            received_from = list(received_from)
+            data["sent_to"] = send_to
+            data["received_from"] = received_from
+            return render(request, "task5-address-tracer/display.html", context=form.cleaned_data)
+    else:
+        form = AddressTraceRequestForm()
+    return render(request, "task5-address-tracer/form.html", context=({"form": form}))
+
+
+
+

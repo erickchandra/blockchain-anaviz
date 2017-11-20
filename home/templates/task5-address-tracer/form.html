@@ -1,0 +1,12 @@
+{% extends "home/base_home.html" %}
+
+{% load staticfiles %}
+{% block link_personal %}
+{% endblock %}
+
+{% block main_dashboard_content %}
+<form method="get">
+{{ form }}
+<input type="submit" value="Go">
+</form>
+{% endblock %}

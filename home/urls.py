@@ -13,4 +13,5 @@ urlpatterns = [
     url(r'^ticker-kraken', views.tickerKraken, name="tickerKraken"),
     url(r'^depth-kraken', views.depthKraken, name="depthKraken"),
     url(r'^user-behaviour', views.userBehaviour, name="userBehaviour"),
+    url(r'^address-tracer', views.addresTracerRequest, name="addressTrace"),
 ]

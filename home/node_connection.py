@@ -73,7 +73,6 @@ def analize_block(analized_address, block):
     i = 0
     c = len(transactions)
     for transaction in transactions:
-        print("transaction {} out of {}".format(i,c))
         i += 1
         data = analize_transaction(analized_address, transaction)
         ans = merge(ans, data)
@@ -87,7 +86,6 @@ def analize_block_by_height(analized_address, block_height):
 def analize_blocks_from_range(analized_address, start, end):
     ans = (set(), set())
     for i in range(start, end+1):
-        print i
         data = analize_block_by_height(analized_address, i)
         ans = merge(ans, data)
     return ans
@@ -98,32 +96,3 @@ def analize_chain(analized_address, blocks_no):
     # https://github.com/bitcoin/bitcoin/issues/3303
     first = max(1, last - blocks_no)
     return analize_blocks_from_range(analized_address, first, last-1)
-
-start()
-x = analize_chain("1NmTeRGtEhD7rjhzHVEdWwAxxpmHrbbEpo", 3)
-print(x)
-
-
-# rpc_user and rpc_password are set in the bitcoin.conf file
-#print("ok")
-#best_block_hash = rpc_connection.getbestblockhash()
-#print(rpc_connection.getblock(best_block_hash))
-#bitcoin_address = "3J98t1WpEZ73CNmQviecrnyiWrnqRhWNLy"
-#command = [["getblockhash", 0]]
-#block_hash = rpc_connection.batch_(command)[0]
-#command = [["getblock", block_hash]]
-#block_info = rpc_connection.batch_(command)[0]["tx"]
-#commands = [["getrawtransaction", transaction_hash, 1] for transaction_hash in block_info]
-#print(commands)
-#transactions = rpc_connection.batch_(commands)
-#for transaction in transactions:
-#    receivers = transaction["vout"]
-#    print receivers
-
-
-#print block_info
-#commands = [ [ "getblockhash", height] for height in range(100) ]
-#block_hashes = rpc_connection.batch_(commands)
-#blocks = rpc_connection.batch_([ [ "getblock", h ] for h in block_hashes ])
-#block_times = [ block["time"] for block in blocks ]
-#print(block_times)
