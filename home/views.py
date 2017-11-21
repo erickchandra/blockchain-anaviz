@@ -64,6 +64,7 @@ def tracing(request):
 
     data = rpc_connection.getpeerinfo()
     arcs = []
+    country_count = {}
 
     for item in data:
         arc = {}
@@ -84,4 +85,9 @@ def tracing(request):
 
         arcs.append(arc)
 
-    return render(request, 'task5-tracing/base_5_tracing.html', context={'arcs': json.dumps(arcs)})
+        country = location_info["country_name"]
+        if country in country_count:
+            country_count[country] += 1
+        else:
+            country_count[country] = 1
+    return render(request, 'task5-tracing/base_5_tracing.html', context={'arcs': json.dumps(arcs), "country_count": country_count})

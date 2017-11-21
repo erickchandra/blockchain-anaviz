@@ -18,6 +18,12 @@
                 </div>
                 <div class="box-body">
                     <div id="container1"></div>
+                    <p><b>Number of connected countries:</b></p>
+                    <ul class="list-inline">
+                        {% for country, count in country_count.items %}
+                            <li>{{ country }}: {{ count }}</li>
+                        {% endfor %}
+                    </ul>
                 </div>
             </div>
         </div>
