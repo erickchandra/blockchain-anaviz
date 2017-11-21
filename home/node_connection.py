@@ -6,7 +6,7 @@ def start():
     address = "140.112.29.42"
     port = "8332"
     #please fill this on your own :)
-    password = None
+    password = "hw234"
     username = "2b"
     global rpc_connection
     rpc_connection = AuthServiceProxy("http://{}:{}@{}:{}".format(username, password, address, port))
