@@ -5,17 +5,19 @@ rpc_connection = None
 def start():
     address = "140.112.29.42"
     port = "8332"
-    #please fill this on your own :)
     password = "hw234"
     username = "2b"
     global rpc_connection
-    rpc_connection = AuthServiceProxy("http://{}:{}@{}:{}".format(username, password, address, port))
+    if rpc_connection is None:
+        rpc_connection = AuthServiceProxy("http://{}:{}@{}:{}".format(username, password, address, port))
+
 
 def flatten(l):
     ans = []
     for i in l:
         ans += i
     return ans
+
 
 def call_method(*args):
     return rpc_connection.batch_([list(args)])[0]
@@ -26,18 +28,49 @@ def get_block_hash(height):
 def get_block(block_hash):
     return call_method("getblock", block_hash)
 
-def get_transactions(tids):
+def get_transactions_simple(tids):
+    print("calling")
     commands = [["getrawtransaction", tid, 1] for tid in tids]
     return rpc_connection.batch_(commands)
 
+
+cache = dict()
+def get_transactions(tids):
+    print(tids[0])
+    not_in_cache = [x for x in tids if x not in cache]
+    if len(not_in_cache) > 0:
+        print("calling with {}".format(len(not_in_cache)))
+        ans = get_transactions_simple(not_in_cache)
+        print("after")
+    else:
+        ans = []
+    for transaction in ans:
+        tid = transaction["txid"]
+        cache[tid] = transaction
+    return [cache[i] for i in tids]
+
+
+def prepare_block(tids):
+    cache.clear()
+    transactions = get_transactions(tids)
+    new_transactions = []
+    for transaction in transactions:
+        for l in transaction["vin"]:
+            if "txid" in l:
+                new_transactions.append(l["txid"])
+    get_transactions(new_transactions)
+
+
 def get_block_count():
     return call_method("getblockcount")
+
 
 def get_output_addresses(transaction):
     ans = set()
     for l in transaction["vout"]:
         ans |= set(l.get("scriptPubKey", {}).get("addresses", []))
     return ans
+
 
 def get_input_addresses(transaction):
     ans = []
@@ -69,6 +102,7 @@ def merge(t1, t2):
 
 def analize_block(analized_address, block):
     ans = (set(), set())
+    prepare_block(block.get("tx", []))
     transactions = get_transactions(block.get("tx", []))
     i = 0
     c = len(transactions)
@@ -86,6 +120,7 @@ def analize_block_by_height(analized_address, block_height):
 def analize_blocks_from_range(analized_address, start, end):
     ans = (set(), set())
     for i in range(start, end+1):
+        print("block {}".format(i))
         data = analize_block_by_height(analized_address, i)
         ans = merge(ans, data)
     return ans
