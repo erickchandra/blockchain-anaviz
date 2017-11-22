@@ -7,8 +7,6 @@ from django.template import loader
 from django.contrib.staticfiles.finders import find
 from django import forms
 
-import home.node_connection
-
 # Views here
 from home import node_connection
 

@@ -5,7 +5,8 @@ rpc_connection = None
 def start():
     address = "140.112.29.42"
     port = "8332"
-    password = "hw234"
+    password = "please fill this"
+    assert password != "please fill this"
     username = "2b"
     global rpc_connection
     if rpc_connection is None:
@@ -28,15 +29,21 @@ def get_block_hash(height):
 def get_block(block_hash):
     return call_method("getblock", block_hash)
 
+def split(l, n):
+    return [l[i:i+n] for i in range(0, len(l), n)]
+
 def get_transactions_simple(tids):
-    print("calling")
     commands = [["getrawtransaction", tid, 1] for tid in tids]
-    return rpc_connection.batch_(commands)
+    command_small_lists = split(commands, 1000)
+    answers = []
+    for command_small_list in command_small_lists:
+        print("calling {}".format(len(command_small_list)))
+        answers += rpc_connection.batch_(command_small_list)
+    return answers
 
 
 cache = dict()
 def get_transactions(tids):
-    print(tids[0])
     not_in_cache = [x for x in tids if x not in cache]
     if len(not_in_cache) > 0:
         print("calling with {}".format(len(not_in_cache)))
