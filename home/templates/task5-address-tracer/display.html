@@ -6,18 +6,78 @@
 {% endblock %}
 
 {% block main_dashboard_content %}
-    Here are the addresses that send some money to the address {{ addressToTrace }}
-    in the last {{ numberOfBlocks }} blocks:
-    <ol>
-    {% for address in received_from %}
-        <li> {{address}} </li>
-    {%  endfor %}
-    </ol>
-    Here are the addresses that received some money fromthe address {{ addressToTrace }}
-    in the last {{ numberOfBlocks }} blocks:
-    {% for address in sent_to %}
-        <li> {{address}} </li>
-    {%  endfor %}
-    </ol>
+                        <section class="content-header">
+                            <h1>
+                                Search results:
+                            </h1>
+                        </section>
+                        <br>
+                        <br>
+
+                       <div class="row">
+                        <div class="col-xs-12">
+                            <div class="box">
+                            {% if sent_to %}
+                                <div class="box-header">
+                                    <h3 class="box-title">In the last {{ numberOfBlocks }} blocks {{ addressToTrace }} sent money to the following addresses </h3>
+                                </div><!-- /.box-header -->
+                                <div class="box-body table-responsive no-padding">
+                                    <table class="table table-hover">
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Address</th>
+                                        </tr>
+                                        {% for address in sent_to %}
+                                            <tr>
+                                                <td>{{ forloop.counter }}</td>
+                                                <td>{{ address }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                    </table>
+                                </div><!-- /.box-body -->
+                                {% else %}
+                                <div class="box">
+                                    <div class="box-header with-border">
+                                        <h3 class="box-title">In the last {{ numberOfBlocks }} blocks {{ addressToTrace }} did not sent any money</h3>
+                                    </div><!-- /.box -->
+                                </div>
+                                {% endif %}
+                            </div><!-- /.box -->
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <div>
+                            {% if received_from %}
+                                <div class="box-header">
+                                    <h3 class="box-title">In the last {{ numberOfBlocks }} blocks {{ addressToTrace }} received money from the following addresses </h3>
+                                </div><!-- /.box-header -->
+                                <div class="box-body table-responsive no-padding">
+                                    <table class="table table-hover">
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Address</th>
+                                        </tr>
+                                        {% for address in received_from %}
+                                            <tr>
+                                                <td>{{ forloop.counter }}</td>
+                                                <td>{{ address }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                    </table>
+                                </div><!-- /.box-body -->
+                                {% else %}
+                                <div class="box box-warning">
+                                    <div class="box-header with-border">
+                                        <h3 class="box-title">In the last {{ numberOfBlocks }} blocks {{ addressToTrace }} did not receive any money</h3>
+                                    </div><!-- /.box -->
+                                </div>
+                                {% endif %}
+                            </div><!-- /.box -->
+                        </div>
+                    </div>
+
+
 
 {% endblock %}

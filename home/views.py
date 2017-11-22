@@ -68,8 +68,7 @@ class AddressTraceRequestForm(forms.Form):
 
 def addresTracerRequest(request):
     node_connection.start()
-    if request.method == 'GET':
-        print("jestem")
+    if request.method == 'GET' and 'addressToTrace' in request.GET:
         form = AddressTraceRequestForm(request.GET)
         if form.is_valid():
             data = form.cleaned_data
