@@ -6,6 +6,8 @@ from django.http import HttpResponse
 from django.template import loader
 from django.contrib.staticfiles.finders import find
 
+from bitcoinrpc.authproxy import AuthServiceProxy, JSONRPCException
+
 # Views here
 def index(request):
     return render(request, 'home/base_home.html')
@@ -54,3 +56,38 @@ def userBehaviour(request):
             else:
                 user_behaviours[timestamp] = 1
     return render(request, 'task2-user-behaviour/user_behaviour.html', context={'user_behaviours': json.dumps(user_behaviours)})
+
+def tracing(request):
+    # access = ServiceProxy("http://2b:hw234@140.112.29.42:8332")
+    # print (access.getinfo())
+    rpc_connection = AuthServiceProxy("http://%s:%s@140.112.29.42:8332"%("2b", "hw234"))
+
+    data = rpc_connection.getpeerinfo()
+    arcs = []
+    country_count = {}
+
+    for item in data:
+        arc = {}
+
+        arc["origin"] = {
+            "latitude": 25.0418,
+            "longitude": 121.4966
+        }
+
+        ip_address = item["addr"].split(":")[0]
+        result = urllib.request.urlopen("http://www.freegeoip.net/json/{0}".format(ip_address)).read()
+        location_info = json.loads(result.decode("utf-8"))
+
+        arc["destination"] = {
+            "latitude": location_info["latitude"],
+            "longitude": location_info["longitude"]
+        }
+
+        arcs.append(arc)
+
+        country = location_info["country_name"]
+        if country in country_count:
+            country_count[country] += 1
+        else:
+            country_count[country] = 1
+    return render(request, 'task5-tracing/base_5_tracing.html', context={'arcs': json.dumps(arcs), "country_count": country_count})
