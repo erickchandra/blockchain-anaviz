@@ -87,7 +87,7 @@ def analize_block_by_height(analized_address, block_height):
 def analize_blocks_from_range(analized_address, start, end):
     ans = (set(), set())
     for i in range(start, end+1):
-        print i
+        print(i)
         data = analize_block_by_height(analized_address, i)
         ans = merge(ans, data)
     return ans
